@@ -9,8 +9,8 @@ namespace FlyingDutchmanAirlines_Tests;
 [TestClass]
 public class CustomerRepositoryTests
 {
-    private FlyingDutchmanAirlinesContext _context;
-    private CustomerRepository _repository;
+    private FlyingDutchmanAirlinesContext _context = default!;
+    private CustomerRepository _repository = default!;
 
     [TestInitialize]
     public async Task TestInitialize()
@@ -35,7 +35,7 @@ public class CustomerRepositoryTests
     [TestMethod]
     public async Task CreateCustomer_Failure_NameIsNull()
     {
-        bool result = await _repository.CreateCustomer(null);
+        bool result = await _repository.CreateCustomer(null!);
         Assert.IsFalse(result);
     }
 
@@ -61,7 +61,7 @@ public class CustomerRepositoryTests
     [TestMethod]
     public async Task CreateCustomer_Failure_DatabaseAccessError()
     {
-        CustomerRepository repository = new CustomerRepository(null);
+        CustomerRepository repository = new CustomerRepository(null!);
         Assert.IsNotNull(repository);
 
         bool result = await repository.CreateCustomer("Ricardo Duarte");
