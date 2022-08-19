@@ -15,7 +15,7 @@ public class BookingRepository
 
     public async Task CreateBooking(int customerId, int flightNumber)
     {
-        if (customerId < 0 || flightNumber < 0)
+        if (!customerId.IsPositive() || !flightNumber.IsPositive())
         {
             Console.WriteLine($"Argument Exception in CreateBooking! CustomerID = {customerId}, flightNumber = {flightNumber}");
             throw new ArgumentException("Invalid arguments provided");
