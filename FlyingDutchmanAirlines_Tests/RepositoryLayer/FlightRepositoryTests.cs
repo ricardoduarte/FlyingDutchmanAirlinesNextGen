@@ -26,7 +26,15 @@ public class FlightRepositoryTests {
             Origin = 1,
             Destination = 2
         };
+
+        Flight flight2 = new Flight {
+            FlightNumber = 10,
+            Origin = 3,
+            Destination = 4
+        };
+
         _context.Flights.Add(flight);
+        _context.Flights.Add(flight2);
         await _context.SaveChangesAsync();
     }
 
@@ -53,5 +61,12 @@ public class FlightRepositoryTests {
     [ExpectedException(typeof(FlightNotFoundException))]
     public async Task GetFlightByFlightNumber_Failure_DatabaseException() {
         await _repository.GetFlightByFlightNumber(2);
+    }
+
+    [TestMethod]
+    public void GetFlights_Success()
+    {
+        IEnumerable<Flight> flights = _repository.GetFlights();
+        Assert.AreEqual(flights.Count(), 2);
     }
 }
