@@ -32,7 +32,7 @@ public class FlightRepositoryTests {
 
     [TestMethod]
     public async Task GetFlightByFlightNumber_Success() {
-        Flight flight = await _repository.GetFlightByFlightNumber(1, 1, 2);
+        Flight flight = await _repository.GetFlightByFlightNumber(1);
         Assert.IsNotNull(flight);
 
         Flight dbFlight = _context.Flights.First(f => f.FlightNumber == 1);
@@ -44,26 +44,14 @@ public class FlightRepositoryTests {
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public async Task GetFlightByFlightNumber_Failure_InvalidOriginAirport() {
-        await _repository.GetFlightByFlightNumber(0, -1, 0);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public async Task GetFlightByFlightNumber_Failure_InvalidDestinationAirport() {
-        await _repository.GetFlightByFlightNumber(0, 0, -1);
-    }
-
-    [TestMethod]
     [ExpectedException(typeof(FlightNotFoundException))]
     public async Task GetFlightByFlightNumber_Failure_InvalidFlightNumber() {
-        await _repository.GetFlightByFlightNumber(-1, 0, 0);
+        await _repository.GetFlightByFlightNumber(-1);
     }
 
     [TestMethod]
     [ExpectedException(typeof(FlightNotFoundException))]
     public async Task GetFlightByFlightNumber_Failure_DatabaseException() {
-        await _repository.GetFlightByFlightNumber(2, 1, 2);
+        await _repository.GetFlightByFlightNumber(2);
     }
 }
