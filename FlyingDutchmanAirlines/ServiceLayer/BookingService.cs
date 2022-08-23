@@ -1,6 +1,7 @@
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.RepositoryLayer;
 using FlyingDutchmanAirlines.Exceptions;
+using System.Runtime.ExceptionServices;
 
 namespace FlyingDutchmanAirlines.ServiceLayer;
 
@@ -29,19 +30,10 @@ public class BookingService
 
         try
         {
+            Customer customer = await GetCustomerFromDatabase(name) ?? await AddCustomerToDatabase(name);
             if (!await FlightExistsInDatabase(flightNumber))
             {
                 throw new CouldNotAddBookingToDatabaseException();
-            }
-            Customer customer = default!;
-            try
-            {
-                customer = await _customerRepository.GetCustomerByName(name);
-            }
-            catch (CustomerNotFoundException)
-            {
-                await _customerRepository.CreateCustomer(name);
-                return await CreateBooking(name, flightNumber);
             }
             await _bookingRepository.CreateBooking(customer.CustomerId, flightNumber);
             return (true, null);
@@ -62,5 +54,28 @@ public class BookingService
         {
             return false;
         }
+    }
+
+    private async Task<Customer> GetCustomerFromDatabase(string name)
+    {
+        try
+        {
+            return await _customerRepository.GetCustomerByName(name);
+        }
+        catch (CustomerNotFoundException)
+        {
+            return null;
+        }
+        catch (Exception exception)
+        {
+            ExceptionDispatchInfo.Capture(exception.InnerException ?? new Exception()).Throw();
+            return null;
+        }
+    }
+
+    private async Task<Customer> AddCustomerToDatabase(string name)
+    {
+        await _customerRepository.CreateCustomer(name);
+        return await _customerRepository.GetCustomerByName(name);
     }
 }
