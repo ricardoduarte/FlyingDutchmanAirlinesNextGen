@@ -6,6 +6,7 @@ using FlyingDutchmanAirlines.Exceptions;
 
 namespace FlyingDutchmanAirlines.ControllerLayer;
 
+[Route("{controller}")]
 public class FlightController : Controller
 {
     private readonly FlightService _service;
@@ -15,6 +16,7 @@ public class FlightController : Controller
         _service = service;
     }
 
+    [HttpGet]
     public async Task<IActionResult> GetFlights()
     {
         try
@@ -33,6 +35,28 @@ public class FlightController : Controller
         catch (Exception)
         {
             return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred");
+        }
+    }
+
+    [HttpGet("{flightNumber}")]
+    public async Task<IActionResult> GetFlightByFlightNumber(int flightNumber)
+    {
+        try
+        {
+            if (!flightNumber.IsPositive())
+            {
+                throw new Exception();
+            }
+            FlightView flight = await _service.GetFlightByFlightNumber(flightNumber);
+            return StatusCode((int)HttpStatusCode.OK, flight);
+        }
+        catch (FlightNotFoundException)
+        {
+            return StatusCode((int)HttpStatusCode.NotFound, "The flight was not found in the database");
+        }
+        catch (Exception)
+        {
+            return StatusCode((int)HttpStatusCode.BadRequest, "Bad request");
         }
     }
 }
