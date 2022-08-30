@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using FlyingDutchmanAirlines.ServiceLayer;
 using FlyingDutchmanAirlines.Exceptions;
 
@@ -15,7 +16,10 @@ public class BookingController : Controller
         _bookingService = bookingService;
     }
 
-    [HttpPost("{flightNumber")]
+    [HttpPost("{flightNumber}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateBooking([FromBody] BookingData body, int flightNumber)
     {
         if (ModelState.IsValid && flightNumber.IsPositive())
