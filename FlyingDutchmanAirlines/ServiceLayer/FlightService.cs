@@ -1,8 +1,10 @@
+using System.Runtime.ExceptionServices;
+using System.Runtime.CompilerServices;
+using System.Reflection;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.RepositoryLayer;
 using FlyingDutchmanAirlines.Views;
 using FlyingDutchmanAirlines.Exceptions;
-using System.Runtime.ExceptionServices;
 
 namespace FlyingDutchmanAirlines.ServiceLayer;
 
@@ -12,13 +14,22 @@ public class FlightService
     private readonly FlightRepository _flightRepository = default!;
     private readonly AirportRepository _airportRepository = default!;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public FlightService()
+    {
+        if (Assembly.GetExecutingAssembly().FullName == Assembly.GetCallingAssembly().FullName)
+        {
+            throw new Exception("This constructor should only be used for testing");
+        }
+    }
+
     public FlightService(FlightRepository flightRepository, AirportRepository airportRepository)
     {
         _flightRepository = flightRepository;
         _airportRepository = airportRepository;
     }
 
-    public async IAsyncEnumerable<FlightView> GetFlights()
+    public virtual async IAsyncEnumerable<FlightView> GetFlights()
     {
         IEnumerable<Flight> flights = _flightRepository.GetFlights();
         foreach (Flight flight in flights)

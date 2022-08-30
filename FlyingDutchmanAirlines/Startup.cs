@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using FlyingDutchmanAirlines.ServiceLayer;
+using FlyingDutchmanAirlines.RepositoryLayer;
+using FlyingDutchmanAirlines.DatabaseLayer;
 
 namespace FlyingDutchmanAirlines;
 
@@ -14,5 +17,9 @@ class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
+        services.AddTransient(typeof(FlightService), typeof(FlightService));
+        services.AddTransient(typeof(FlightRepository), typeof(FlightRepository));
+        services.AddTransient(typeof(AirportRepository), typeof(AirportRepository));
+        services.AddTransient(typeof(FlyingDutchmanAirlinesContext), typeof(FlyingDutchmanAirlinesContext));
     }
 }
